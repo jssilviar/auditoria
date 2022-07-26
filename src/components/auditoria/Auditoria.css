@@ -1,0 +1,14 @@
+.fondoa {
+    background-color: purple;
+    justify-content: center;
+    flex-direction: row;
+}
+
+.container {
+    ;
+}
+
+.boton {
+    width: '100%';
+    background-color: 'green';
+}
