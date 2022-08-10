@@ -17,15 +17,20 @@ function App() {
   });
 
   const [response, setResponse] = useState([]);
+  const [boton, setBoton] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  const request = async () => {
+  const request = async (event) => {
 
     const url = `http://localhost:7071/api/finances/settlement/audit/report`;
 
     axios.post( url, formData)
       .then(function (response) {
+
         const {data} = response.data;
-        setResponse(data)
+        setResponse(data);
+        event.target.reset();
+        setLoading(false)
       })
       .catch(function (error) {
         console.log(error);
@@ -60,20 +65,20 @@ function App() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    request();
-    
+    request(e);
   }
 
+const cambiarTexto = (e) => {
+  setBoton(!boton)
+}
   return (
     <div className='container-fluid auditoriaBody'>
-      {/* <h1>Finanzas</h1>
-      <h2>Auditoria de Folios</h2> */}
-      <nav className="navbar bg-light">
+      <nav className="navbar">
         <div className="container-fluid">
         <span className="navbar-brand mb-0 h1">Finanzas</span>
         </div>
       </nav>
-      <nav className="navbar bg-light">
+      <nav className="navbar">
         <div className="container-fluid">
           <span className="navbar-brand mb-0 h1">Auditoría de Folios</span>
         </div>
@@ -87,7 +92,7 @@ function App() {
             placeholder="Folios"
             id="sales" 
             required
-            rows="15">
+            rows="18">
           </textarea>
           <div className="input-group mb-3">
             <span className="input-group-text">RUT</span>
@@ -115,20 +120,32 @@ function App() {
             <button className="btn btn-success" type="submit">Buscar</button>
           </div>
         </form>
-        <div className='col-9'>
-          <button className='btn btn-success' data-bs-target="#form-sidebar" data-bs-toggle="collapse" >Mostrar</button>
-          <DataTable
-            columns={ titleTables }
-            data={ response }
-            pagination
-            paginationComponentOptions={paginationOptions}
-            fixedHeader
-            highlightOnHover
-            />
-          <div className="container text-center">
-            <div className="row">
-              <div className="col">
-                <CSVLink data={response} filename={"response.csv"} className="text-success fs-5" >Exportar a CSV</CSVLink>
+        <div className={boton ? 'col-9' : 'col-12'}>
+          <button 
+            className='btn btn-success'
+            data-bs-target="#form-sidebar"
+            data-bs-toggle="collapse"
+            onClick={cambiarTexto}
+            >
+            {boton ? 'Ocultar formulario' : 'Mostrar formulario'}
+          </button>
+          
+          <div>
+            {loading ? 
+             'Cargando' 
+              : <DataTable
+                columns={ titleTables }
+                data={ response }
+                striped
+                pagination
+                paginationComponentOptions={paginationOptions}
+                noDataComponent={'No hay información que mostrar.'}
+                />}
+            <div className="container text-center">
+              <div className="row">
+                <div className="col">
+                  <CSVLink data={response} filename={"response.csv"} className="text-success fs-5" >Exportar a CSV</CSVLink>
+                </div>
               </div>
             </div>
           </div>
